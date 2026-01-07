@@ -1,1 +1,1048 @@
+<!DOCTYPE html>
 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2d1f3f">
+    <title>Together Score - Relationship Poker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-plum: #2d1f3f;
+            --soft-rose: #e8bcc8;
+            --warm-cream: #fef8f3;
+            --sage: #9fb8a0;
+            --sunset: #f4a261;
+            --midnight: #1a1428;
+        }
+
+```
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: linear-gradient(135deg, var(--warm-cream) 0%, #f9e9e0 100%);
+        min-height: 100vh;
+        color: var(--deep-plum);
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(232, 188, 200, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(159, 184, 160, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; position: relative; z-index: 1; }
+    
+    header { text-align: center; margin-bottom: 3rem; animation: fadeInDown 0.8s ease-out; }
+    
+    .logo {
+        font-family: 'Crimson Pro', serif;
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--deep-plum);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+        text-shadow: 0 2px 8px rgba(45, 31, 63, 0.1);
+    }
+    .logo::before { content: '💝 '; }
+    
+    .tagline { 
+        font-size: 1.1rem; 
+        color: var(--deep-plum); 
+        opacity: 0.85;
+        font-weight: 500;
+    }
+    
+    .view { display: none; animation: fadeIn 0.5s ease-out; }
+    .view.active { display: block; }
+    
+    .card {
+        background: white;
+        border-radius: 24px;
+        padding: 3rem 2.5rem;
+        box-shadow: 0 8px 32px rgba(45, 31, 63, 0.15);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .card h2 {
+        font-family: 'Crimson Pro', serif;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        color: var(--deep-plum);
+        text-align: center;
+    }
+    
+    .card p { line-height: 1.7; margin-bottom: 1rem; opacity: 0.8; text-align: center; }
+    
+    .btn-group { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+    
+    .btn {
+        flex: 1;
+        min-width: 150px;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 16px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: 'DM Sans', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 0; height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:hover::before { width: 300px; height: 300px; }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--deep-plum) 0%, var(--midnight) 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45, 31, 63, 0.3); }
+    
+    .btn-secondary { background: var(--soft-rose); color: var(--deep-plum); }
+    .btn-secondary:hover { background: #dfaab8; transform: translateY(-2px); }
+    
+    input, textarea {
+        padding: 1rem;
+        border: 2px solid rgba(45, 31, 63, 0.1);
+        border-radius: 12px;
+        font-size: 1rem;
+        width: 100%;
+        margin: 0.5rem 0;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.3s;
+    }
+    
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--soft-rose);
+        box-shadow: 0 0 0 4px rgba(232, 188, 200, 0.1);
+    }
+    
+    .categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .category {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        cursor: pointer;
+        box-shadow: 0 8px 32px rgba(45, 31, 63, 0.15);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 3px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .category::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, var(--soft-rose), var(--sage));
+        transform: scaleX(0);
+        transition: transform 0.4s;
+    }
+    
+    .category:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 48px rgba(45, 31, 63, 0.25);
+        border-color: var(--soft-rose);
+    }
+    
+    .category:hover::before { transform: scaleX(1); }
+    
+    .category.completed { opacity: 0.6; }
+    .category.completed::after {
+        content: '✓';
+        position: absolute;
+        top: 1rem; right: 1rem;
+        font-size: 1.5rem;
+        color: var(--sage);
+    }
+    
+    .category-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+    
+    .category-title {
+        font-family: 'Crimson Pro', serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--deep-plum);
+    }
+    
+    .category-description { font-size: 0.95rem; line-height: 1.6; opacity: 0.7; }
+    
+    .voting-header { text-align: center; margin-bottom: 2rem; }
+    .voting-header h2 { 
+        font-family: 'Crimson Pro', serif; 
+        font-size: 1.3rem; 
+        margin-bottom: 0.5rem;
+        opacity: 0.5;
+        font-weight: 400;
+    }
+    .current-category { 
+        font-size: 2.5rem; 
+        color: var(--deep-plum); 
+        font-weight: 700;
+        font-family: 'Crimson Pro', serif;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+    .current-voter { 
+        font-size: 1.5rem; 
+        color: var(--sunset); 
+        font-weight: 600; 
+        margin: 1rem 0; 
+    }
+    
+    .partner-section {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 1rem auto;
+        max-width: 600px;
+        box-shadow: 0 8px 32px rgba(45, 31, 63, 0.15);
+    }
+    
+    .partner-name {
+        font-family: 'Crimson Pro', serif;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        color: var(--deep-plum);
+    }
+    
+    .poker-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+    
+    .poker-card {
+        aspect-ratio: 2/3;
+        background: linear-gradient(135deg, var(--deep-plum) 0%, var(--midnight) 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 3px solid transparent;
+        font-family: 'Crimson Pro', serif;
+    }
+    
+    .poker-card:hover {
+        transform: translateY(-8px) rotate(2deg);
+        box-shadow: 0 12px 32px rgba(45, 31, 63, 0.3);
+    }
+    
+    .poker-card.selected {
+        border-color: var(--sunset);
+        background: linear-gradient(135deg, var(--sunset) 0%, #e76f51 100%);
+        transform: scale(1.05);
+    }
+    
+    .poker-card.revealed { animation: flipCard 0.6s ease-in-out; }
+    
+    .results-display {
+        max-width: 700px;
+        margin: 2rem auto;
+    }
+    
+    .comparison-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 32px rgba(45, 31, 63, 0.15);
+        margin-bottom: 2rem;
+    }
+    
+    .comparison-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .interpretation {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--deep-plum);
+        margin-bottom: 0.5rem;
+    }
+    
+    .interpretation-detail {
+        font-size: 1rem;
+        opacity: 0.7;
+    }
+    
+    .polarity-insight {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(159, 184, 160, 0.1);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-style: italic;
+        color: var(--deep-plum);
+        opacity: 0.8;
+    }
+    
+    .rating-comparison {
+        position: relative;
+        margin: 2rem 0;
+    }
+    
+    .bars-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        position: relative;
+    }
+    
+    .bar-row {
+        display: grid;
+        grid-template-columns: 100px 1fr 60px;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .partner-name {
+        font-family: 'Crimson Pro', serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: right;
+        color: var(--deep-plum);
+    }
+    
+    .bar-scale {
+        position: relative;
+        height: 40px;
+        background: rgba(45, 31, 63, 0.03);
+        border-radius: 8px;
+    }
+    
+    .bar-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        border-radius: 8px;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .bar-higher {
+        background: linear-gradient(90deg, #a8d5ba 0%, #7fb89a 100%);
+    }
+    
+    .bar-lower {
+        background: linear-gradient(90deg, #d4a5a5 0%, #b88b8b 100%);
+    }
+    
+    .score-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        font-family: 'Crimson Pro', serif;
+        color: var(--deep-plum);
+        text-align: center;
+    }
+    
+    .gap-connector {
+        position: absolute;
+        right: 60px;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+    }
+    
+    .gap-bracket-svg {
+        width: 40px;
+        height: 100%;
+        position: relative;
+    }
+    
+    .gap-label {
+        position: absolute;
+        right: -70px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: white;
+        padding: 0.5rem 0.75rem;
+        border: 2px solid rgba(45, 31, 63, 0.15);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--deep-plum);
+        white-space: nowrap;
+    }
+    
+    .scale-axis {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+        margin-left: 100px;
+        margin-right: 60px;
+        font-size: 0.75rem;
+        opacity: 0.4;
+        padding: 0 1rem;
+    }
+    
+    .average-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid rgba(45, 31, 63, 0.05);
+    }
+    
+    .average-label {
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--deep-plum);
+        margin-bottom: 1rem;
+    }
+    
+    .average-label-sub {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 400;
+        opacity: 0.6;
+        margin-top: 0.25rem;
+    }
+    
+    .average-row {
+        display: grid;
+        grid-template-columns: 100px 1fr 60px;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .average-track {
+        position: relative;
+        height: 8px;
+        background: rgba(159, 184, 160, 0.15);
+        border-radius: 4px;
+    }
+    
+    .average-marker {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .average-line {
+        width: 2px;
+        height: 30px;
+        background: var(--sage);
+    }
+    
+    .average-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--sage);
+        font-family: 'Crimson Pro', serif;
+    }
+    
+    .average-context {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+        margin-left: 100px;
+        margin-right: 60px;
+        font-size: 0.8rem;
+        opacity: 0.5;
+    }
+    
+    .result-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(45, 31, 63, 0.15);
+        text-align: center;
+    }
+    
+    .difference-indicator {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+    
+    .difference-high { background: rgba(244, 162, 97, 0.2); color: var(--sunset); }
+    .difference-low { background: rgba(159, 184, 160, 0.2); color: var(--sage); }
+    
+    .history-list { display: grid; gap: 1.5rem; margin: 2rem 0; }
+    
+    .history-item {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(45, 31, 63, 0.15);
+        transition: transform 0.3s;
+    }
+    
+    .history-item:hover { transform: translateX(8px); }
+    
+    .history-date {
+        font-size: 0.9rem;
+        color: var(--sunset);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .history-scores {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    
+    .score-badge {
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, var(--soft-rose) 0%, var(--sage) 100%);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--deep-plum);
+    }
+    
+    .streak-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, var(--sunset) 0%, #e76f51 100%);
+        color: white;
+        border-radius: 12px;
+        font-weight: 600;
+        margin: 1rem 0;
+    }
+    
+    .action-notes {
+        background: rgba(254, 248, 243, 0.5);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .action-notes h3 {
+        font-family: 'Crimson Pro', serif;
+        margin-bottom: 1rem;
+    }
+    
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes flipCard {
+        0% { transform: rotateY(0deg); }
+        50% { transform: rotateY(90deg); }
+        100% { transform: rotateY(0deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .logo { font-size: 2rem; }
+        .categories { grid-template-columns: 1fr; }
+        .poker-card { font-size: 1.5rem; }
+        .result-value { font-size: 3rem; }
+    }
+    
+    @media (prefers-color-scheme: dark) {
+        body { background: linear-gradient(135deg, var(--midnight) 0%, #0f0a1a 100%); color: var(--warm-cream); }
+        .card, .category, .partner-section, .result-card, .history-item {
+            background: rgba(45, 31, 63, 0.6);
+            backdrop-filter: blur(10px);
+            color: var(--warm-cream);
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">Together Score</h1>
+            <p class="tagline">A playful way to strengthen your relationship</p>
+        </header>
+
+```
+    <!-- Welcome -->
+    <div id="welcome" class="view active">
+        <div class="card">
+            <h2>Welcome to Your Relationship Journey</h2>
+            <p>Together Score helps couples evaluate and strengthen their relationship through gamified, honest conversations.</p>
+            <p>Like planning poker, you'll rate different aspects of your relationship privately, then reveal and discuss your perspectives together.</p>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="showSetup()">Start New Session</button>
+                <button class="btn btn-secondary" onclick="showHistory()">View History</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup -->
+    <div id="setup" class="view">
+        <div class="card">
+            <h2>Session Setup</h2>
+            <label style="font-weight: 600; display: block; margin-top: 1rem;">Partner 1 Name</label>
+            <input type="text" id="p1" placeholder="Enter your name">
+            <label style="font-weight: 600; display: block; margin-top: 1rem;">Partner 2 Name</label>
+            <input type="text" id="p2" placeholder="Enter partner's name">
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="startSession()">Begin Evaluation</button>
+                <button class="btn btn-secondary" onclick="showView('welcome')">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div id="categories" class="view">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-family: 'Crimson Pro', serif; font-size: 2.5rem; margin-bottom: 0.5rem;">Choose a Category</h2>
+            <p style="opacity: 0.7;">Select an area of your relationship to evaluate together</p>
+        </div>
+        <div class="categories" id="categoryGrid"></div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn btn-secondary" onclick="showView('welcome')">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Voting -->
+    <div id="voting" class="view">
+        <div class="voting-header">
+            <p class="current-category" id="categoryName"></p>
+            <div class="current-voter" id="currentVoter"></div>
+        </div>
+        <div id="votingSections"></div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn btn-primary" id="nextBtn" onclick="nextVoter()" style="display: none;">Next</button>
+            <button class="btn btn-primary" id="revealBtn" onclick="reveal()" style="display: none;">Reveal Votes</button>
+        </div>
+        <div id="results" style="display: none;">
+            <div class="results-display" id="resultDisplay"></div>
+            <div class="action-notes">
+                <h3>Discussion Notes & Action Items</h3>
+                <textarea id="actionNotes" placeholder="What did you learn? What actions will you take?"></textarea>
+            </div>
+            <div class="btn-group" style="max-width: 600px; margin: 0 auto;">
+                <button class="btn btn-primary" onclick="saveAndContinue()">Save & Next Category</button>
+                <button class="btn btn-secondary" onclick="endSession()">End Session</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History -->
+    <div id="history" class="view">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-family: 'Crimson Pro', serif; font-size: 2.5rem; margin-bottom: 0.5rem;">Session History</h2>
+            <div class="streak-badge">
+                🔥 <span id="streakCount">0</span> Total Sessions
+            </div>
+        </div>
+        <div class="history-list" id="historyList"></div>
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn btn-secondary" onclick="showView('welcome')">Back to Home</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const categories = [
+        { id: 'safety', icon: '🛡️', title: 'Emotional Safety', desc: 'Feeling secure, trusted, and free from judgment or resentment' },
+        { id: 'intimacy', icon: '💕', title: 'Intimacy', desc: 'Physical and emotional closeness, affection, and vulnerability sharing' },
+        { id: 'communication', icon: '💬', title: 'Communication', desc: 'Quality of listening, conflict resolution, and expressing needs' },
+        { id: 'fairness', icon: '🏠', title: 'Household Fairness', desc: 'Balanced division of chores, finances, and daily tasks' },
+        { id: 'satisfaction', icon: '⭐', title: 'Overall Satisfaction', desc: 'General happiness, commitment, and relationship comparison' },
+        { id: 'time', icon: '⏰', title: 'Time Together', desc: 'Quality shared activities, fun, and prioritization of couple time' },
+        { id: 'sexual', icon: '🔥', title: 'Sexual Connection', desc: 'Satisfaction with intimacy, comfort with initiation, and communication' },
+        { id: 'conflict', icon: '🤝', title: 'Conflict & Forgiveness', desc: 'Ease of arguing, apologizing, and letting go of hurts' },
+        { id: 'values', icon: '🎯', title: 'Shared Values', desc: 'Alignment on goals, spirituality, parenting, and growth support' },
+        { id: 'appreciation', icon: '🙏', title: 'Appreciation', desc: 'Gratitude, acceptance, and friendship quality' }
+    ];
+
+    const scale = [1, 2, 3, 5, 8, 13];
+    let session = null;
+    let votes = [null, null];
+    let currentCategory = null;
+    let currentVoterIndex = 0;
+
+    // Load saved data
+    function loadData() {
+        const saved = localStorage.getItem('togetherScore');
+        return saved ? JSON.parse(saved) : { sessions: [] };
+    }
+
+    function saveData(data) {
+        localStorage.setItem('togetherScore', JSON.stringify(data));
+    }
+
+    function showView(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+    }
+
+    function showSetup() {
+        showView('setup');
+    }
+
+    function startSession() {
+        const p1 = document.getElementById('p1').value.trim();
+        const p2 = document.getElementById('p2').value.trim();
+        
+        if (!p1 || !p2) {
+            alert('Please enter both partner names');
+            return;
+        }
+
+        session = {
+            id: Date.now(),
+            p1, p2,
+            date: new Date().toISOString(),
+            completed: [],
+            evaluations: []
+        };
+        
+        renderCategories();
+        showView('categories');
+    }
+
+    function renderCategories() {
+        const grid = document.getElementById('categoryGrid');
+        grid.innerHTML = '';
+        
+        categories.forEach(cat => {
+            const isCompleted = session.completed.includes(cat.id);
+            const div = document.createElement('div');
+            div.className = 'category' + (isCompleted ? ' completed' : '');
+            div.innerHTML = `
+                <div class="category-icon">${cat.icon}</div>
+                <div class="category-title">${cat.title}</div>
+                <p class="category-description">${cat.desc}</p>
+            `;
+            if (!isCompleted) {
+                div.onclick = () => selectCategory(cat);
+            }
+            grid.appendChild(div);
+        });
+    }
+
+    function selectCategory(cat) {
+        currentCategory = cat;
+        votes = [null, null];
+        currentVoterIndex = 0;
+        document.getElementById('categoryName').innerHTML = `${cat.icon} ${cat.title}`;
+        showCurrentVoter();
+    }
+
+    function showCurrentVoter() {
+        const voterName = currentVoterIndex === 0 ? session.p1 : session.p2;
+        document.getElementById('currentVoter').textContent = `${voterName}'s turn to vote`;
+        
+        const container = document.getElementById('votingSections');
+        container.innerHTML = '';
+        
+        const section = document.createElement('div');
+        section.className = 'partner-section';
+        section.innerHTML = `
+            <h3 class="partner-name">${voterName}</h3>
+            <p style="text-align: center; opacity: 0.7; margin-bottom: 1.5rem;">Select your rating privately (your partner cannot see)</p>
+            <div class="poker-cards" id="currentCards"></div>
+        `;
+        container.appendChild(section);
+        
+        const cardContainer = document.getElementById('currentCards');
+        scale.forEach(value => {
+            const card = document.createElement('div');
+            card.className = 'poker-card';
+            card.textContent = value;
+            card.onclick = () => selectCard(value, cardContainer);
+            cardContainer.appendChild(card);
+        });
+        
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('revealBtn').style.display = 'none';
+        document.getElementById('results').style.display = 'none';
+        showView('voting');
+    }
+
+    function selectCard(value, container) {
+        container.querySelectorAll('.poker-card').forEach(c => c.classList.remove('selected'));
+        event.target.classList.add('selected');
+        votes[currentVoterIndex] = value;
+        document.getElementById('nextBtn').style.display = 'inline-block';
+    }
+
+    function nextVoter() {
+        if (currentVoterIndex === 0) {
+            currentVoterIndex = 1;
+            showCurrentVoter();
+        } else {
+            document.getElementById('currentVoter').textContent = 'Both partners have voted!';
+            document.getElementById('votingSections').innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <p style="font-size: 1.2rem; margin-bottom: 1rem;">✨ Ready to see the results?</p>
+                    <p style="opacity: 0.7;">Click reveal to see both votes simultaneously</p>
+                </div>
+            `;
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('revealBtn').style.display = 'inline-block';
+        }
+    }
+
+    function reveal() {
+        const avg = ((votes[0] + votes[1]) / 2).toFixed(1);
+        const diff = Math.abs(votes[0] - votes[1]);
+        
+        // Determine interpretation
+        let interpretation = '';
+        let detail = '';
+        let polarity = '';
+        
+        if (diff === 0) {
+            interpretation = 'Perfect alignment';
+            detail = 'You both see this exactly the same way';
+            polarity = 'You\'re completely in sync on this area.';
+        } else if (diff <= 2) {
+            interpretation = 'Strong agreement';
+            detail = 'Your views are very close';
+            polarity = 'Minor difference—you largely agree on the importance of this.';
+        } else if (diff <= 5) {
+            interpretation = 'Moderate difference';
+            detail = 'Some perspectives to discuss';
+            const higherName = votes[0] > votes[1] ? session.p1 : session.p2;
+            const lowerName = votes[0] > votes[1] ? session.p2 : session.p1;
+            polarity = `${higherName} rates this more important than ${lowerName} does.`;
+        } else if (diff <= 8) {
+            interpretation = 'Significant gap';
+            detail = 'Important conversation needed';
+            const higherName = votes[0] > votes[1] ? session.p1 : session.p2;
+            const lowerName = votes[0] > votes[1] ? session.p2 : session.p1;
+            polarity = `${higherName} sees this as a priority; ${lowerName} doesn't feel the same urgency.`;
+        } else {
+            interpretation = 'Very different views';
+            detail = 'This is an area to focus on together';
+            const higherName = votes[0] > votes[1] ? session.p1 : session.p2;
+            const lowerName = votes[0] > votes[1] ? session.p2 : session.p1;
+            polarity = `Major disconnect: ${higherName} rates this as critical, while ${lowerName} rates it much lower.`;
+        }
+        
+        // Determine who scored higher
+        const higherIndex = votes[0] > votes[1] ? 0 : 1;
+        const lowerIndex = votes[0] > votes[1] ? 1 : 0;
+        const higherName = higherIndex === 0 ? session.p1 : session.p2;
+        const lowerName = lowerIndex === 0 ? session.p1 : session.p2;
+        const higherScore = Math.max(votes[0], votes[1]);
+        const lowerScore = Math.min(votes[0], votes[1]);
+        
+        // Calculate bar widths - TRUE SCALE from 0 to 13
+        const maxScale = 13;
+        const higherWidth = (higherScore / maxScale) * 100;
+        const lowerWidth = (lowerScore / maxScale) * 100;
+        const avgPosition = (avg / maxScale) * 100;
+        
+        // Calculate distance from average
+        const higherDist = Math.abs(higherScore - avg).toFixed(1);
+        const lowerDist = Math.abs(lowerScore - avg).toFixed(1);
+        
+        setTimeout(() => {
+            document.getElementById('resultDisplay').innerHTML = `
+                <div class="comparison-card">
+                    <div class="comparison-header">
+                        <div class="interpretation">${interpretation}</div>
+                        <div class="interpretation-detail">${detail}</div>
+                        ${diff > 0 ? `<div class="polarity-insight">${polarity}</div>` : ''}
+                    </div>
+                    
+                    <div class="rating-comparison">
+                        <div class="bars-container">
+                            <div class="bar-row">
+                                <div class="partner-name">${higherName}</div>
+                                <div class="bar-scale">
+                                    <div class="bar-fill bar-higher" style="width: ${higherWidth}%"></div>
+                                </div>
+                                <div class="score-number">${higherScore}</div>
+                            </div>
+                            
+                            <div class="bar-row">
+                                <div class="partner-name">${lowerName}</div>
+                                <div class="bar-scale">
+                                    <div class="bar-fill bar-lower" style="width: ${lowerWidth}%"></div>
+                                </div>
+                                <div class="score-number">${lowerScore}</div>
+                            </div>
+                            
+                            ${diff > 0 ? `
+                            <div class="gap-connector">
+                                <svg class="gap-bracket-svg" style="height: 100px;">
+                                    <line x1="20" y1="10" x2="20" y2="90" stroke="rgba(45,31,63,0.3)" stroke-width="2"/>
+                                    <line x1="15" y1="10" x2="25" y2="10" stroke="rgba(45,31,63,0.3)" stroke-width="2"/>
+                                    <line x1="15" y1="90" x2="25" y2="90" stroke="rgba(45,31,63,0.3)" stroke-width="2"/>
+                                </svg>
+                                <div class="gap-label">${diff}</div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="scale-axis">
+                            <span>0</span>
+                            <span>13</span>
+                        </div>
+                    </div>
+                    
+                    <div class="average-section">
+                        <div class="average-label">
+                            Relationship average
+                            <span class="average-label-sub">Between you</span>
+                        </div>
+                        <div class="average-row">
+                            <div></div>
+                            <div class="average-track">
+                                <div class="average-marker" style="left: ${avgPosition}%;">
+                                    <div class="average-value">${avg}</div>
+                                    <div class="average-line"></div>
+                                </div>
+                            </div>
+                            <div></div>
+                        </div>
+                        <div class="average-context">
+                            <span>${higherName}: +${higherDist}</span>
+                            <span>${lowerName}: -${lowerDist}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('revealBtn').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('currentVoter').textContent = '';
+            document.getElementById('votingSections').style.display = 'none';
+        }, 300);
+    }
+
+    function saveAndContinue() {
+        const notes = document.getElementById('actionNotes').value;
+        
+        session.evaluations.push({
+            category: currentCategory.title,
+            categoryId: currentCategory.id,
+            p1Vote: votes[0],
+            p2Vote: votes[1],
+            average: ((votes[0] + votes[1]) / 2).toFixed(1),
+            difference: Math.abs(votes[0] - votes[1]),
+            notes,
+            date: new Date().toISOString()
+        });
+        
+        session.completed.push(currentCategory.id);
+        document.getElementById('actionNotes').value = '';
+        document.getElementById('votingSections').style.display = 'block';
+        
+        renderCategories();
+        showView('categories');
+    }
+
+    function endSession() {
+        if (session && session.evaluations.length > 0) {
+            if (confirm('End this session? All evaluations will be saved to history.')) {
+                const data = loadData();
+                data.sessions.push(session);
+                saveData(data);
+                session = null;
+                showView('welcome');
+            }
+        } else {
+            // No evaluations yet, just go back
+            if (confirm('End session without saving? No categories have been evaluated yet.')) {
+                session = null;
+                showView('welcome');
+            }
+        }
+    }
+
+    function showHistory() {
+        const data = loadData();
+        const list = document.getElementById('historyList');
+        list.innerHTML = '';
+        
+        document.getElementById('streakCount').textContent = data.sessions.length;
+        
+        if (data.sessions.length === 0) {
+            list.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: 3rem;">No sessions yet. Start your first evaluation!</p>';
+        } else {
+            const sorted = [...data.sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sorted.forEach(s => {
+                const date = new Date(s.date);
+                const formatted = date.toLocaleDateString('en-US', { 
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                });
+                
+                let scores = '';
+                s.evaluations.forEach(e => {
+                    scores += `<div class="score-badge">${e.category}: ${e.average}</div>`;
+                });
+                
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div class="history-date">${formatted}</div>
+                    <h4 style="font-family: 'Crimson Pro', serif; font-size: 1.3rem; margin: 0.5rem 0;">${s.p1} & ${s.p2}</h4>
+                    <p style="opacity: 0.7; font-size: 0.9rem;">${s.evaluations.length} categories evaluated</p>
+                    <div class="history-scores">${scores}</div>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        showView('history');
+    }
+</script>
+```
+
+</body>
+</html>
