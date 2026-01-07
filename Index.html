@@ -375,35 +375,40 @@
     }
     
     .gap-connector {
-        position: absolute;
-        right: 60px;
-        top: 0;
-        bottom: 0;
+        grid-column: 1 / -1;
+        margin: 1rem 0;
+        padding: 0 1rem;
+    }
+    
+    .gap-visual {
         display: flex;
         align-items: center;
-        justify-content: center;
-        pointer-events: none;
+        gap: 0.75rem;
+        background: rgba(45, 31, 63, 0.03);
+        padding: 1rem;
+        border-radius: 12px;
+        border-left: 4px solid var(--deep-plum);
     }
     
-    .gap-bracket-svg {
-        width: 40px;
-        height: 100%;
-        position: relative;
+    .gap-icon {
+        font-size: 1.5rem;
     }
     
-    .gap-label {
-        position: absolute;
-        right: -70px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: white;
-        padding: 0.5rem 0.75rem;
-        border: 2px solid rgba(45, 31, 63, 0.15);
-        border-radius: 8px;
-        font-size: 0.9rem;
-        font-weight: 600;
+    .gap-text {
+        flex: 1;
+    }
+    
+    .gap-number {
+        font-size: 1.5rem;
+        font-weight: 700;
         color: var(--deep-plum);
-        white-space: nowrap;
+        font-family: 'Crimson Pro', serif;
+    }
+    
+    .gap-label-text {
+        font-size: 0.9rem;
+        opacity: 0.7;
+        margin-top: 0.25rem;
     }
     
     .scale-axis {
@@ -415,75 +420,6 @@
         font-size: 0.75rem;
         opacity: 0.4;
         padding: 0 1rem;
-    }
-    
-    .average-section {
-        margin-top: 2rem;
-        padding-top: 2rem;
-        border-top: 2px solid rgba(45, 31, 63, 0.05);
-    }
-    
-    .average-label {
-        text-align: center;
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--deep-plum);
-        margin-bottom: 1rem;
-    }
-    
-    .average-label-sub {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 400;
-        opacity: 0.6;
-        margin-top: 0.25rem;
-    }
-    
-    .average-row {
-        display: grid;
-        grid-template-columns: 100px 1fr 60px;
-        align-items: center;
-        gap: 1rem;
-    }
-    
-    .average-track {
-        position: relative;
-        height: 8px;
-        background: rgba(159, 184, 160, 0.15);
-        border-radius: 4px;
-    }
-    
-    .average-marker {
-        position: absolute;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .average-line {
-        width: 2px;
-        height: 30px;
-        background: var(--sage);
-    }
-    
-    .average-value {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--sage);
-        font-family: 'Crimson Pro', serif;
-    }
-    
-    .average-context {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 0.75rem;
-        margin-left: 100px;
-        margin-right: 60px;
-        font-size: 0.8rem;
-        opacity: 0.5;
     }
     
     .result-card {
@@ -918,12 +854,13 @@
                             
                             ${diff > 0 ? `
                             <div class="gap-connector">
-                                <svg class="gap-bracket-svg" style="height: 100px;">
-                                    <line x1="20" y1="10" x2="20" y2="90" stroke="rgba(45,31,63,0.3)" stroke-width="2"/>
-                                    <line x1="15" y1="10" x2="25" y2="10" stroke="rgba(45,31,63,0.3)" stroke-width="2"/>
-                                    <line x1="15" y1="90" x2="25" y2="90" stroke="rgba(45,31,63,0.3)" stroke-width="2"/>
-                                </svg>
-                                <div class="gap-label">${diff}</div>
+                                <div class="gap-visual">
+                                    <span class="gap-icon">↔️</span>
+                                    <div class="gap-text">
+                                        <div class="gap-number">${diff} ${diff === 1 ? 'point' : 'points'}</div>
+                                        <div class="gap-label-text">Difference between scores</div>
+                                    </div>
+                                </div>
                             </div>
                             ` : ''}
                         </div>
@@ -931,27 +868,6 @@
                         <div class="scale-axis">
                             <span>0</span>
                             <span>13</span>
-                        </div>
-                    </div>
-                    
-                    <div class="average-section">
-                        <div class="average-label">
-                            Relationship average
-                            <span class="average-label-sub">Between you</span>
-                        </div>
-                        <div class="average-row">
-                            <div></div>
-                            <div class="average-track">
-                                <div class="average-marker" style="left: ${avgPosition}%;">
-                                    <div class="average-value">${avg}</div>
-                                    <div class="average-line"></div>
-                                </div>
-                            </div>
-                            <div></div>
-                        </div>
-                        <div class="average-context">
-                            <span>${higherName}: +${higherDist}</span>
-                            <span>${lowerName}: -${lowerDist}</span>
                         </div>
                     </div>
                 </div>
